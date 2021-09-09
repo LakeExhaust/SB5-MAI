@@ -191,3 +191,5 @@ class CDATAReader
    }
 
 }
+
+//hello and goodbye
