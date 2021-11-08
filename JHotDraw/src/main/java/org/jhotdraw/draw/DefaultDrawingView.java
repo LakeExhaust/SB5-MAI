@@ -27,7 +27,7 @@ import javax.swing.border.EmptyBorder;
 import org.jhotdraw.app.EditableComponent;
 import org.jhotdraw.app.JHotDrawFeatures;
 import static org.jhotdraw.draw.AttributeKeys.*;
-
+import java.util.List;
 /**
  * The DefaultDrawingView is suited for viewing drawings with a small number
  * of Figures.
@@ -321,6 +321,28 @@ public class DefaultDrawingView
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, (Options.isTextAntialiased()) ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         drawDrawing(g);
     }
+//Refactored methods 
+// 15 Lines of Code
+
+public List getSortedFigures() {
+ return getDrawing().sort(getSelectedFigures());
+}
+public List getDeletedFigures() {
+ List<Figure> deletedFigures = DeletedFigure.getInstance();
+ deletedFigures = drawing.sort(getSelectedFigures());
+//final java.util.List<Figure> deletedFigures = drawing.sort(getSelectedFigures());
+return deletedFigures;
+}
+public int[] getDeletedIndices(List<Figure> deletedFigures) {
+        final int[] deletedFigureIndices = new int[deletedFigures.size()];
+        for (int i = 0; i < deletedFigureIndices.length; i++) {
+         deletedFigureIndices[i] = drawing.indexOf(deletedFigures.get(i));
+            
+        }
+        
+            return deletedFigureIndices;
+            
+       }
 
     protected void drawBackground(Graphics2D g) {
         // Position of the zero coordinate point on the view
@@ -1012,36 +1034,11 @@ public class DefaultDrawingView
         t.translate(-translate.x, -translate.y);
         return t;
     }
-
-    @FeatureEntryPoint(JHotDrawFeatures.BASIC_EDITING)
-    public void delete() {
-        final LinkedList<CompositeFigureEvent> deletionEvents = new LinkedList<CompositeFigureEvent>();
-        final java.util.List<Figure> deletedFigures = drawing.sort(getSelectedFigures());
-
-        // Abort, if not all of the selected figures may be removed from the
-        // drawing
-        for (Figure f : deletedFigures) {
-            if (!f.isRemovable()) {
-                getToolkit().beep();
-                return;
-
-            }
-
-
-        }
-
-        // Get z-indices of deleted figures
-        final int[] deletedFigureIndices = new int[deletedFigures.size()];
-        for (int i = 0; i <
-                deletedFigureIndices.length; i++) {
-            deletedFigureIndices[i] = drawing.indexOf(deletedFigures.get(i));
-        }
-
-        clearSelection();
-        getDrawing().removeAll(deletedFigures);
-
+    
+    public void getDeleteDrawingEvent(List<Figure> deletedFigures) {
+        
         getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
-
+          int[] deletedFigureIndices= getDeletedIndices(deletedFigures);
             @Override
             public String getPresentationName() {
                 ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
@@ -1075,30 +1072,58 @@ public class DefaultDrawingView
     }
 
     @FeatureEntryPoint(JHotDrawFeatures.BASIC_EDITING)
-    public void duplicate() {
-        Collection<Figure> sorted = getDrawing().sort(getSelectedFigures());
-        HashMap<Figure, Figure> originalToDuplicateMap = new HashMap<Figure, Figure>(sorted.size());
+    public void delete() {
+        final LinkedList<CompositeFigureEvent> deletionEvents = new LinkedList<CompositeFigureEvent>();
+        //Calling deletedFigures so it can be extracted from anywhere
+        List<Figure> deletedFigures = getDeletedFigures();
 
+        // Abort, if not all of the selected figures may be removed from the
+        // drawing
+        for (Figure f : deletedFigures) {
+            if (!f.isRemovable()) {
+                getToolkit().beep();
+                return;
+
+            }
+
+
+        }
+        //Method was moved from here to above
+        // Get z-indices of deleted figures
+       
         clearSelection();
+        getDrawing().removeAll(deletedFigures);
 
-        final ArrayList<Figure> duplicates = new ArrayList<Figure>(sorted.size());
+        getDeleteDrawingEvent(deletedFigures);
+        
+    }
+    public HashMap<Figure, Figure> getDuplicateMap() {
+        HashMap<Figure, Figure> originalToDuplicateMap = new HashMap<Figure, Figure>(getSortedFigures().size());
+        return originalToDuplicateMap;
+        
+    }
+    
+        public ArrayList<Figure> getDuplicateArray() {
+         final ArrayList<Figure> duplicates = new ArrayList<Figure>(getSortedFigures().size());
+        return duplicates;
+        
+    }
+
+     public void getCaculations(Collection<Figure> sorted) {
+          
         AffineTransform tx = new AffineTransform();
         tx.translate(5, 5);
         for (Figure f : sorted) {
             Figure d = (Figure) f.clone();
             d.transform(tx);
-            duplicates.add(d);
-            originalToDuplicateMap.put(f, d);
+           getDuplicateArray().add(d);
+           getDuplicateMap().put(f, d);
             drawing.add(d);
         }
-
-        for (Figure f : duplicates) {
-            f.remap(originalToDuplicateMap, false);
-        }
-
-        addToSelection(duplicates);
-
-        getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
+     }
+     
+     public void getDrawingEvent(ArrayList<Figure> duplicates) {
+           getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
 
             @Override
             public String getPresentationName() {
@@ -1118,6 +1143,24 @@ public class DefaultDrawingView
                 getDrawing().addAll(duplicates);
             }
         });
+     }
+    @FeatureEntryPoint(JHotDrawFeatures.BASIC_EDITING)
+    public void duplicate() {
+        Collection<Figure> sorted = getSortedFigures();
+        HashMap<Figure, Figure> originalToDuplicateMap = getDuplicateMap();
+
+        clearSelection();
+
+        final ArrayList<Figure> duplicates = getDuplicateArray();
+        getCaculations(sorted);
+
+        for (Figure f : duplicates) {
+            f.remap(originalToDuplicateMap, false);
+        }
+
+        addToSelection(duplicates);
+
+       getDrawingEvent(duplicates);
     }
 
     public void removeNotify(DrawingEditor editor) {
