@@ -248,7 +248,9 @@ public class DefaultDrawingView
         setBackground(new java.awt.Color(255, 255, 255));
     }//GEN-END:initComponents
 
+    @Override
     public Drawing getDrawing() {
+     
         return drawing;
     }
 
@@ -325,6 +327,7 @@ public class DefaultDrawingView
 // 15 Lines of Code
 
 public List getSortedFigures() {
+ 
  return getDrawing().sort(getSelectedFigures());
 }
 public List getDeletedFigures() {
@@ -337,9 +340,10 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
         final int[] deletedFigureIndices = new int[deletedFigures.size()];
         for (int i = 0; i < deletedFigureIndices.length; i++) {
          deletedFigureIndices[i] = drawing.indexOf(deletedFigures.get(i));
+          System.out.println(i);
             
         }
-        
+      
             return deletedFigureIndices;
             
        }
@@ -526,9 +530,18 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
     /**
      * Adds a collection of figures to the current selection.
      */
+    public Set<Figure> getoldSelection() {
+    Set<Figure> oldSelection = new HashSet<Figure>(selectedFigures);
+    return oldSelection;
+    }
+    
+        public Set<Figure> getnewSelection() {
+    Set<Figure> oldSelection = new HashSet<Figure>(selectedFigures);
+    return oldSelection;
+    }
     public void addToSelection(Collection<Figure> figures) {
-        Set<Figure> oldSelection = new HashSet<Figure>(selectedFigures);
-        Set<Figure> newSelection = new HashSet<Figure>(selectedFigures);
+        Set<Figure> oldSelection = getoldSelection();
+        Set<Figure> newSelection = getnewSelection();
         boolean selectionChanged = false;
         Rectangle invalidatedArea = null;
         for (Figure figure : figures) {
@@ -562,9 +575,9 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
      * Removes a figure from the selection.
      */
     public void removeFromSelection(Figure figure) {
-        Set<Figure> oldSelection = new HashSet<Figure>(selectedFigures);
+        Set<Figure> oldSelection = getoldSelection();
         if (selectedFigures.remove(figure)) {
-            Set<Figure> newSelection = new HashSet<Figure>(selectedFigures);
+            Set<Figure> newSelection = getnewSelection();
             invalidateHandles();
             figure.removeFigureListener(handleInvalidator);
             fireSelectionChanged(oldSelection, newSelection);
@@ -1039,6 +1052,7 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
         
         getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
           int[] deletedFigureIndices= getDeletedIndices(deletedFigures);
+          
             @Override
             public String getPresentationName() {
                 ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
@@ -1152,7 +1166,10 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
         clearSelection();
 
         final ArrayList<Figure> duplicates = getDuplicateArray();
-        getCaculations(sorted);
+       
+        
+       getCaculations(sorted);
+        
 
         for (Figure f : duplicates) {
             f.remap(originalToDuplicateMap, false);
@@ -1260,4 +1277,5 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
     public Handle getActiveHandle() {
         return activeHandle;
     }
+  
 }

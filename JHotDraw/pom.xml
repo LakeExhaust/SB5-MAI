@@ -39,13 +39,15 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-            <scope>test</scope>
+            <type>jar</type>
+            <scope>>bdd</scope>
         </dependency>
         <dependency>
             <groupId>com.tngtech.jgiven</groupId>
             <artifactId>jgiven-junit</artifactId>
             <version>1.0.0-RC6</version>
-            <scope>test</scope>
+            <type>jar</type>
         </dependency>
+        
     </dependencies>
  </project>

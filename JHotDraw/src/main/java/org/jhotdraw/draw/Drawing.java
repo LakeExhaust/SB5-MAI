@@ -1,17 +1,14 @@
 /*
- * @(#)Drawing.java  3.2  2009-05-05
- *
- * Copyright (c) 1996-2009 by the original authors of JHotDraw
- * and all its contributors.
- * All rights reserved.
- *
- * The copyright of this software is owned by the authors and  
- * contributors of the JHotDraw project ("the copyright holders").  
- * You may not use, copy or modify this software, except in  
- * accordance with the license agreement you entered into with  
- * the copyright holders. For details see accompanying license terms. 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 
+
+/**
+ *
+ * @author lake
+ */
 
 package org.jhotdraw.draw;
 
@@ -24,6 +21,18 @@ import java.util.*;
 import javax.swing.undo.*;
 import javax.swing.event.*;
 import java.io.*;
+
+import java.awt.Graphics2D;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoableEdit;
+import org.jhotdraw.xml.DOMStorable;
+
 /**
  * A drawing holds figures. It can draw its figures, and it can find
  * them on its drawing area.
