@@ -250,8 +250,8 @@ public class DefaultDrawingView
 
     @Override
     public Drawing getDrawing() {
-     
-        return drawing;
+         return drawing;
+        
     }
 
     @Override
@@ -340,7 +340,7 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
         final int[] deletedFigureIndices = new int[deletedFigures.size()];
         for (int i = 0; i < deletedFigureIndices.length; i++) {
          deletedFigureIndices[i] = drawing.indexOf(deletedFigures.get(i));
-          System.out.println(i);
+        
             
         }
       
@@ -1052,7 +1052,7 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
         
         getDrawing().fireUndoableEditHappened(new AbstractUndoableEdit() {
           int[] deletedFigureIndices= getDeletedIndices(deletedFigures);
-          
+         
             @Override
             public String getPresentationName() {
                 ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
@@ -1090,6 +1090,7 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
         final LinkedList<CompositeFigureEvent> deletionEvents = new LinkedList<CompositeFigureEvent>();
         //Calling deletedFigures so it can be extracted from anywhere
         List<Figure> deletedFigures = getDeletedFigures();
+        System.out.println(deletedFigures.size());
 
         // Abort, if not all of the selected figures may be removed from the
         // drawing
@@ -1119,7 +1120,7 @@ public int[] getDeletedIndices(List<Figure> deletedFigures) {
     
         public ArrayList<Figure> getDuplicateArray() {
          final ArrayList<Figure> duplicates = new ArrayList<Figure>(getSortedFigures().size());
-        return duplicates;
+         return duplicates;
         
     }
 
